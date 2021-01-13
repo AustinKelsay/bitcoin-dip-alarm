@@ -1,7 +1,7 @@
 import requests
 import time
 from datetime import datetime
-from flask import Flask, render_template
+from flask import Flask, render_template, request, json
 from decouple import config
 
 app = Flask(__name__)
@@ -9,11 +9,11 @@ app = Flask(__name__)
 IFTTT_WEBHOOKS_URL = config("IFTTT")
 bitcoin_api_url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
 
-@app.route('/api', methods=['GET'])
-def helloWorld():
-    return {
-        "test": "test1"
-    }
+@app.route('/price', methods=['GET'])
+def get_bitcoin_price():
+    response = requests.get(bitcoin_api_url)
+    response_json = response.json()
+    return {"price": "{}".format(response_json['bitcoin']['usd'])}
 
 def get_latest_bitcoin_price():
     response = requests.get(bitcoin_api_url)
@@ -26,7 +26,13 @@ def post_ifttt_webhook(event, value):
     # Sends a HTTP POST request to the webhook URL
     requests.post(ifttt_event_url, json=data)
 
-BITCOIN_PRICE_THRESHOLD = input("At what price threshold would you like to be notified? ")
+@app.route('/api', methods=['GET', 'POST'])
+def enter_price_threshold():
+    if request.method == 'POST':
+        request_data = request.data
+        return {"price": "{}".format(request_data)}
+    else:
+        return {"request": "{}".format(request.data)}
 
 def main():
     bitcoin_history = []

@@ -1,16 +1,35 @@
 import React, {useEffect, useState} from "react";
-import {Form, Button} from "react-bootstrap";
+import axios from "axios"
+import {Form, Button, Jumbotron, Container} from "react-bootstrap";
 import './App.css';
 
 function App() {
   const [ value, setValue ] = useState(25000);
+  const [currentPrice, setCurrentPrice] = useState("")
   useEffect(() => {
-    fetch('/api').then((res) => {
-      res.json().then(data => console.log(data))
+    axios.get('/price').then((res) => {
+      setCurrentPrice(res.data.price)
+    })
+    .catch((err) => {
+      console.log(err)
     })
   },[])
+
+  const submitPrice = () => {
+    axios.post('/api', {price: "test"}).then((res) => {
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
   return (
     <div className="App">
+      <Jumbotron fluid>
+        <Container>
+          <h1>{currentPrice}</h1>
+        </Container>
+      </Jumbotron>
       <Form>
         <Form.Group controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -20,7 +39,7 @@ function App() {
         <Form.Label>Enter the price in which you want to be notified</Form.Label>
         <Form.Control onChange={e => setValue(e.target.value)} value={value} type="text" placeholder="Normal text" />
         </Form.Group>
-        <Button variant="primary" type="submit">
+        <Button onClick={submitPrice()} variant="primary" type="submit">
           Submit
         </Button>
       </Form>
