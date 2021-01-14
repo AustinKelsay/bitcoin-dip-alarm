@@ -6,6 +6,12 @@ import './App.css';
 function App() {
   const [ value, setValue ] = useState(25000);
   const [currentPrice, setCurrentPrice] = useState("")
+  const [emailInfo, SetEmailInfo] = useState({
+    feedback: '', 
+    name: '', 
+    replyTo: '',
+    email: ''
+})
   useEffect(() => {
     axios.get('/price').then((res) => {
       setCurrentPrice(res.data.price)
@@ -25,8 +31,12 @@ function App() {
   }
   return (
     <div className="App">
-      <Jumbotron fluid>
+      <Jumbotron>
         <Container>
+          <h1>Austin's Bitcoin price dip alert</h1>
+        </Container>
+        <Container>
+          <span>Current price</span>
           <h1>{currentPrice}</h1>
         </Container>
       </Jumbotron>
